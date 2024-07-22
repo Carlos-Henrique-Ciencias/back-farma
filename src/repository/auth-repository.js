@@ -8,6 +8,7 @@ class AuthRepository {
             const result = await pool.execute(sql, [username, bcrypt.hashPassword(password), email]);
             return [result[0].insertId, ""]
         } catch (error) {
+            console.log(error)
             return ["", error];
         }
     }
