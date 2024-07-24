@@ -1,14 +1,33 @@
 const pool = require("../config/db");
 
 class PatientsRepository {
-    async add({ username, email, userId }) {
+    async add(patientData) {
+        const {
+            username, email, userId, birthdate, gender, civilName, optionalGender,
+            cpf, rg, naturalness, nationality, religion, education, state, ethnicity,
+            maritalStatus, profession, cep, address, number, complement, neighborhood,
+            city, stateAddress, country, cellPhone, homePhone, workPhone, insurance, 
+            plan, cardNumber, validity, accommodation
+        } = patientData;
+
         try {
-            const sql = `INSERT INTO patients (username, email, user_id) VALUES (?, ?, ?)`;
-            await pool.execute(sql, [username, email, userId]);
+            const sql = `INSERT INTO patients (username, email, user_id, birthdate, gender, civil_name, optional_gender,
+                          cpf, rg, naturalness, nationality, religion, education, state, ethnicity, marital_status,
+                          profession, cep, address, number, complement, neighborhood, city, state_address, country,
+                          cell_phone, home_phone, work_phone, insurance, plan, card_number, validity, accommodation) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            await pool.execute(sql, [
+                username, email, userId, birthdate, gender, civilName, optionalGender,
+                cpf, rg, naturalness, nationality, religion, education, state, ethnicity,
+                maritalStatus, profession, cep, address, number, complement, neighborhood,
+                city, stateAddress, country, cellPhone, homePhone, workPhone, insurance, 
+                plan, cardNumber, validity, accommodation
+            ]);
         } catch (error) {
             return error;
         }
     }
+
     async getByEmail({ email }) {
         try {
             const sql = `SELECT * FROM patients WHERE email = ?`;
@@ -18,6 +37,7 @@ class PatientsRepository {
             return [];
         }
     }
+
     async getByUserId({ userId }) {
         try {
             const sql = `SELECT u.username AS created_by, p.* FROM patients p
@@ -29,16 +49,17 @@ class PatientsRepository {
             return [];
         }
     }
-    async get() {
+
+    async getById(id) {
         try {
-            const sql = `SELECT u.username AS created_by, p.* FROM patients p
-                        JOIN users u ON u.id = p.user_id`;
-            const [result] = await pool.execute(sql);
-            return result;
+            const sql = `SELECT * FROM patients WHERE id = ?`;
+            const [result] = await pool.execute(sql, [id]);
+            return result[0];
         } catch (error) {
-            return [];
+            return null;
         }
     }
+
     async removeById(id) {
         try {
             const sql = `DELETE FROM patients WHERE id = ?`;

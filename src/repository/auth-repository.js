@@ -40,6 +40,7 @@ class AuthRepository {
             return [];
         }
     }
+    
 }
 
 module.exports = new AuthRepository();

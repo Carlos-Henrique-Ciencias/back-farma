@@ -8,7 +8,13 @@ const ROLES = require("../enums/roles")
 class PatientsHandler {
     async add({ body, headers }, response) {
         const authHeader = headers.authorization;
-        const { username, email } = body;
+        const {
+            username, email, birthdate, gender, civilName, optionalGender, cpf,
+            rg, naturalness, nationality, religion, education, state, ethnicity,
+            maritalStatus, profession, cep, address, number, complement, neighborhood,
+            city, stateAddress, country, cellPhone, homePhone, workPhone, insurance, 
+            plan, cardNumber, validity, accommodation
+        } = body;
 
         if (!authHeader) {
             return response.status(STATUS_CODE.UNAUTHORIZED).json({ message: "Usuário não autenticado." });
@@ -29,7 +35,12 @@ class PatientsHandler {
             const decoded = jwt.jwtDecode(token);
             const users = await usersRepository.get();
             const user = users.find(elem => elem.username == decoded.username);
-            const error = await patientsRepository.add({ userId: user.id, username, email })
+            const error = await patientsRepository.add({
+                userId: user.id, username, email, birthdate, gender, civilName, optionalGender, cpf,
+                rg, naturalness, nationality, religion, education, state, ethnicity, maritalStatus,
+                profession, cep, address, number, complement, neighborhood, city, stateAddress, country,
+                cellPhone, homePhone, workPhone, insurance, plan, cardNumber, validity, accommodation
+            });
 
             if (error) return response.status(STATUS_CODE.UNPROCESSABLE_ENTITY).json({ message: "Aconteceu um erro interno, tente novamente em instantes." });
 
@@ -39,6 +50,7 @@ class PatientsHandler {
             response.status(STATUS_CODE.UNAUTHORIZED).json({ message: "Usuário não autenticado." });
         }
     }
+
     async get({ headers }, response) {
         const authHeader = headers.authorization;
 
@@ -70,6 +82,36 @@ class PatientsHandler {
                     id: elem.id,
                     username: elem.username,
                     email: elem.email,
+                    birthdate: elem.birthdate,
+                    gender: elem.gender,
+                    civilName: elem.civil_name,
+                    optionalGender: elem.optional_gender,
+                    cpf: elem.cpf,
+                    rg: elem.rg,
+                    naturalness: elem.naturalness,
+                    nationality: elem.nationality,
+                    religion: elem.religion,
+                    education: elem.education,
+                    state: elem.state,
+                    ethnicity: elem.ethnicity,
+                    maritalStatus: elem.marital_status,
+                    profession: elem.profession,
+                    cep: elem.cep,
+                    address: elem.address,
+                    number: elem.number,
+                    complement: elem.complement,
+                    neighborhood: elem.neighborhood,
+                    city: elem.city,
+                    stateAddress: elem.state_address,
+                    country: elem.country,
+                    cellPhone: elem.cell_phone,
+                    homePhone: elem.home_phone,
+                    workPhone: elem.work_phone,
+                    insurance: elem.insurance,
+                    plan: elem.plan,
+                    cardNumber: elem.card_number,
+                    validity: elem.validity,
+                    accommodation: elem.accommodation,
                     createdAt: elem.created_at,
                     createdBy: elem.created_by
                 }
@@ -81,6 +123,7 @@ class PatientsHandler {
             response.status(STATUS_CODE.UNAUTHORIZED).json({ message: "Usuário não autenticado." });
         }
     }
+
     async remove({ headers, params }, response) {
         const authHeader = headers.authorization;
 
@@ -102,6 +145,13 @@ class PatientsHandler {
             response.status(STATUS_CODE.UNAUTHORIZED).json({ message: "Usuário não autenticado." });
         }
     }
+    async getPatientDetails({ params }, res) {
+        const { id } = params;
+        const patient = await patientsRepository.getById(id);
+        if (!patient) return res.status(STATUS_CODE.NOT_FOUND).json({ message: "Paciente não encontrado." });
+        res.status(STATUS_CODE.SUCCESS).json(patient);
+    }
+
 }
 
 module.exports = new PatientsHandler();
